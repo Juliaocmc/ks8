@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: "goserver"
+          image: "correajcm/hello-go:v6.4"
+          resources:
+
+
+          startupProbe:
+            httpGet: 
+              path: /helthz
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 30
+
+          readinessProbe:
+            httpGet: 
+              path: /helthz
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 1
+
+          livenessProbe:
+            httpGet: 
+              path: /helthz
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 1
+            timeoutSeconds: 1
+
+          envFrom:
+            - configMapRef:
+                name: goserver-config
